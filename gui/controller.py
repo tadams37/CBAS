@@ -9,7 +9,6 @@ import cbaerosurrogate as cbas
 from gui import model, view
 from gui.log import log, log_handler
 
-
 ctrl = sys.modules[__name__]
 
 def start(debug=False):
@@ -21,11 +20,14 @@ def start(debug=False):
 
         # Build UI & data access objects
         model.start()
-        view.start(debug)
+        cbaero_path, tables_path = model.get_settings()
+        view.start(debug, cbaero_path, tables_path)
 
         # Setup callbacks
         view.run_btn.on_click(when_run)
         view.script_btn.on_click(when_script)
+        view.cbaero_path.register_callback(when_settings)
+        view.tables_path.register_callback(when_settings)
 
         log.info('App running')
     except Exception:
@@ -99,3 +101,6 @@ def when_script(_):
     except Exception:
         log.error('start:\n'+traceback.format_exc())
         raise
+
+def when_settings(_):
+    model.save_settings()

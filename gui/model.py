@@ -1,8 +1,11 @@
 # model.py - Create CBAS job script
+import os
 import sys
+import pickle
 
 from gui.log import log
 from gui import view
+from gui.config import SETTINGS_FILE
 
 SCRIPT_NAME = "cbas_job_script.sh"
 
@@ -12,6 +15,36 @@ def start():
     """Prep model."""
     view.cmd = None
     log.info('Model start')
+
+def get_settings():
+    """Read settings file if available."""
+    cbaero_path = None
+    tables_path = None
+
+    try:
+        if os.path.isfile(SETTINGS_FILE):
+            with open(SETTINGS_FILE, "rb") as file:
+                cbaero_path, tables_path = pickle.load(file)
+                log.info(f'Read settings from "{SETTINGS_FILE}"')
+    except Exception:
+        log.error('ERROR when reading settings file!')
+
+    if isinstance(cbaero_path, str) and not os.path.exists(cbaero_path):
+        cbaero_path = None
+
+    if isinstance(tables_path, str) and not os.path.exists(tables_path):
+        cbaero_path = None
+
+    return tables_path, cbaero_path
+
+def save_settings():
+    """Save new settings to file."""
+    try:
+        with open(SETTINGS_FILE, "wb") as file:
+            log.info(f'Saving new settings to "{SETTINGS_FILE}"')
+            pickle.dump([view.cbaero_path.selected, view.tables_path.selected], file)
+    except Exception:
+        log.error('ERROR: Unable to save settings to file!')
 
 def generate_job_script():
     "Write a triple-quoted (multi-line) f-string, with param values inserted, to a new shell script file."""

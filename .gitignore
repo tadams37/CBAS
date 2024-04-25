@@ -8,3 +8,4 @@ cbaero/*
 .vscode/*
 test/test_run*
 otis/*
+cbas_settings.pkl
