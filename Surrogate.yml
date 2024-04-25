@@ -1,0 +1,12 @@
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.9
+  - smt
+  - matplotlib
+  - jupyter
+  - voila
+  - openpyxl
+  - pydoe2
+  - ipyfilechooser

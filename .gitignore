@@ -1,0 +1,10 @@
+*.pyc
+*.data
+*.png
+*.eps
+CBAero/*
+Giuseppe_Integration/*
+cbaero/*
+.vscode/*
+test/test_run*
+otis/*
