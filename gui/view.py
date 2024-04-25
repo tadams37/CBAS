@@ -19,7 +19,7 @@ HALF_DESC_WIDTH = '100px'
 
 view = sys.modules[__name__]
 
-def start(show_log):
+def start(show_log, cbaero_path, tables_path):
     """Build the user interface."""
     display(HTML(filename='gui/custom.html'))  # Send CSS code down to browser TODO No worky-worky?
 
@@ -44,7 +44,7 @@ def start(show_log):
     tab_content.append(view.params_tab())
     tab_content.append(view.run_tab())
     tab_content.append(view.job_tab())
-    tab_content.append(view.settings_tab())
+    tab_content.append(view.settings_tab(cbaero_path, tables_path))
     tabs.children = tuple(tab_content)  # Fill tabs with content
 
     for i, tab_title in enumerate(['Parameters', 'Run', 'Job', 'Settings']):
@@ -70,7 +70,7 @@ def params_tab():
     # Create widgets
 
     # TODO How to get default file itself to be selected (rather than just default path)?
-    view.model_path = FileChooser(INIT_MODEL_PATH, default_filename=INIT_MODEL_FNAME, select_default=True)
+    view.model_path = FileChooser(filter_pattern=CBAERO_FILES_FILTER)
 
     view.train_pts_start = IntText(description='Training points range, start', value=INIT_TRAIN_PTS_START)
     view.train_pts_stop = IntText(description='stop', value=INIT_TRAIN_PTS_END)
@@ -164,14 +164,21 @@ def job_tab():
                  HTML('<hr style="visibility: hidden;">'),
                  HBox([view.script_btn, view.script_lbl])])
 
-def settings_tab():
+def settings_tab(cbaero_path, tables_path):
     """Create widgets for Settings screen."""
 
     # TODO Read and write settings to file for persistence?
 
     # Create widgets
-    view.cbaero_path = FileChooser(INIT_CBAERO_PATH, select_default=True, show_only_dirs=True)
-    view.tables_path = FileChooser(INIT_TABLES_PATH, select_default=True, show_only_dirs=True)
+    if (cbaero_path is not None):
+        view.cbaero_path = FileChooser(cbaero_path, select_default=True, show_only_dirs=True)
+    else:
+        view.cbaero_path = FileChooser(show_only_dirs=True)
+
+    if (tables_path is not None):
+        view.tables_path = FileChooser(tables_path, select_default=True, show_only_dirs=True)
+    else:
+        view.tables_path = FileChooser(show_only_dirs=True)
 
     # Lay out widgets
     return VBox([HBox([Label('CBAero exec. dir.', layout=Layout(width='150px')),

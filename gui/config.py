@@ -1,13 +1,8 @@
 # config.py - Configuration info
-# TODO Are these the best intial values to use?
+SETTINGS_FILE = 'cbas_settings.pkl'
+CBAERO_FILES_FILTER = '*.cbaero'
 
-# Settings values
-INIT_CBAERO_PATH = './cbaero/cbaero.5.3.7_binaries/bin.linux.redhat.7.9/'
-INIT_TABLES_PATH = './cbaero/tables'
-
-# Parameters
-INIT_MODEL_PATH = './cbaero/models/HL20_Models/hl20/'
-INIT_MODEL_FNAME = 'hl20.cbaero'
+# Parameters TODO Are these the best intial values to use?
 INIT_TRAIN_PTS_START = 15
 INIT_TRAIN_PTS_END = 17
 INIT_TRAIN_PTS_STEP = 1
