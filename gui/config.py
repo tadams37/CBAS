@@ -1,6 +1,7 @@
 # config.py - Configuration info
 SETTINGS_FILE = 'cbas_settings.pkl'
 CBAERO_FILES_FILTER = '*.cbaero'
+CBAS_RUN_PREFIX = 'cbas_run_'
 
 # Parameters TODO Are these the best intial values to use?
 INIT_TRAIN_PTS_START = 15

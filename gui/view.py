@@ -1,12 +1,13 @@
 # view.py - Build CBAS user interface
-import os
 import sys
+import logging
+
 from IPython.display import display
 from ipywidgets import HBox, IntText, Label, Layout, FloatText, \
                        Output, HTML, Image, Tab, Text, VBox, Button
 from ipyfilechooser import FileChooser
 from IPython.core.display import clear_output
-from gui.log import log, log_handler
+
 from gui.config import *
 
 SM_FULL_WIDTH = '140px'
@@ -19,7 +20,7 @@ HALF_DESC_WIDTH = '100px'
 
 view = sys.modules[__name__]
 
-def start(show_log, cbaero_path, tables_path):
+def start(paths):
     """Build the user interface."""
     display(HTML(filename='gui/custom.html'))  # Send CSS code down to browser TODO No worky-worky?
 
@@ -44,17 +45,14 @@ def start(show_log, cbaero_path, tables_path):
     tab_content.append(view.params_tab())
     tab_content.append(view.run_tab())
     tab_content.append(view.job_tab())
-    tab_content.append(view.settings_tab(cbaero_path, tables_path))
+    tab_content.append(view.settings_tab(paths))
     tabs.children = tuple(tab_content)  # Fill tabs with content
 
     for i, tab_title in enumerate(['Parameters', 'Run', 'Job', 'Settings']):
         tabs.set_title(i, tab_title)
 
     display(VBox([header, tabs]))
-    log.info('UI build completed')
-
-    if show_log:  # Duplicate log lines in log widget (will always show in Jupyter Lab log)
-        display(log_handler.log_output_widget)
+    logging.info('UI build completed')
 
 def set_width(widgets, width='auto', desc=False):
     """Set width for widgets' layouts or descriptions."""
@@ -68,10 +66,7 @@ def set_width(widgets, width='auto', desc=False):
 def params_tab():
     """Create widgets for Parameters screen."""
     # Create widgets
-
-    # TODO How to get default file itself to be selected (rather than just default path)?
     view.model_path = FileChooser(filter_pattern=CBAERO_FILES_FILTER)
-
     view.train_pts_start = IntText(description='Training points range, start', value=INIT_TRAIN_PTS_START)
     view.train_pts_stop = IntText(description='stop', value=INIT_TRAIN_PTS_END)
     view.train_pts_step = IntText(description='step', value=INIT_TRAIN_PTS_STEP)
@@ -164,10 +159,9 @@ def job_tab():
                  HTML('<hr style="visibility: hidden;">'),
                  HBox([view.script_btn, view.script_lbl])])
 
-def settings_tab(cbaero_path, tables_path):
+def settings_tab(paths):
     """Create widgets for Settings screen."""
-
-    # TODO Read and write settings to file for persistence?
+    cbaero_path, tables_path, run_path = paths
 
     # Create widgets
     if (cbaero_path is not None):
@@ -180,16 +174,25 @@ def settings_tab(cbaero_path, tables_path):
     else:
         view.tables_path = FileChooser(show_only_dirs=True)
 
+    if (run_path is not None):
+        view.run_path = FileChooser(run_path, select_default=True, show_only_dirs=True)
+    else:
+        view.run_path = FileChooser(show_only_dirs=True)
+
     # Lay out widgets
     return VBox([HBox([Label('CBAero exec. dir.', layout=Layout(width='150px')),
                        Label(layout=Layout(width='10px')),
                        view.cbaero_path]),
                  HBox([Label('Tables directory', layout=Layout(width='150px')),
                        Label(layout=Layout(width='10px')),
-                       view.tables_path])
+                       view.tables_path]),
+                 HBox([Label('Run directory', layout=Layout(width='150px')),
+                       Label(layout=Layout(width='10px')),
+                       view.run_path])
                  ])
 
 def run_msg(txt, clear=False):
+    """Display text in run output widget and log it."""
     with view.run_out:
 
         if clear:
@@ -199,3 +202,5 @@ def run_msg(txt, clear=False):
              print(txt)
 
         sys.stdout.flush()
+
+    logging.info(f'Run msg.: "{txt}"')

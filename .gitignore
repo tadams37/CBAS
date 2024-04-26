@@ -9,3 +9,5 @@ cbaero/*
 test/test_run*
 otis/*
 cbas_settings.pkl
+cbas_gui.log
+.ipynb_checkpoints/*
