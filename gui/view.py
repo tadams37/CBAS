@@ -117,7 +117,8 @@ def run_tab():
                           button_style='success', # 'success', 'info', 'warning', 'danger' or ''
                           tooltip='Run immediatly',
                           icon='play')  # (FontAwesome names without the `fa-` prefix)
-    view.run_out = Output(layout={'border': '1px solid black', 'height': '400px', 'width': 'auto'})
+    view.run_out = Output(layout={'border': '1px solid black', 'height': '400px', 'width': 'auto', 'overflow': 'auto'})
+    # TODO Get run_out to automatically scroll to bottom as output is added
 
     with view.run_out:
         print('Ready...')
@@ -202,5 +203,3 @@ def run_msg(txt, clear=False):
              print(txt)
 
         sys.stdout.flush()
-
-    logging.info(f'Run msg.: "{txt}"')

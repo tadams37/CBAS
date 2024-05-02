@@ -9,6 +9,7 @@ import cbaerosurrogate as cbas
 
 from gui import model, view
 from gui.config import CBAS_RUN_PREFIX
+from gui.log import log_handler
 
 ctrl = sys.modules[__name__]
 
@@ -48,6 +49,7 @@ def when_run(_):
             cokrig_path, save_fname = valid_optional_paths()
             set_cbaero_env()
             orig_cwd = set_run_dir()
+            log_handler.start_log_output(view.run_out)
 
             # Create cbas object
             logging.info('Creating CbaeroSurrogate object')
@@ -66,6 +68,7 @@ def when_run(_):
                          cbas.SERIAL)
 
             # Finish up after run
+            log_handler.stop_log_output()
             os.chdir(orig_cwd)
             view.run_msg('Run completed')
 
