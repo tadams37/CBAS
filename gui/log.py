@@ -1,6 +1,5 @@
 # log.py - Logging
 import logging
-import ipywidgets as widgets
 
 
 class AppendFileLineToLog(logging.Filter):

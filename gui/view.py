@@ -17,6 +17,7 @@ MED_DESC_WIDTH = '200px'
 LG_FULL_WIDTH = '400px'
 LG_DESC_WIDTH = '200px'
 HALF_DESC_WIDTH = '100px'
+PLUS_DESC_WIDTH = '150px'
 
 view = sys.modules[__name__]
 
@@ -66,7 +67,7 @@ def set_width(widgets, width='auto', desc=False):
 def params_tab():
     """Create widgets for Parameters screen."""
     # Create widgets
-    view.model_path = FileChooser(filter_pattern=CBAERO_FILES_FILTER)
+    view.model_path = FileChooser(filter_pattern=CBAERO_FILES_FILTER, layout=Layout(width='auto'))
     view.train_pts_start = IntText(description='Training points range, start', value=INIT_TRAIN_PTS_START)
     view.train_pts_stop = IntText(description='stop', value=INIT_TRAIN_PTS_END)
     view.train_pts_step = IntText(description='step', value=INIT_TRAIN_PTS_STEP)
@@ -77,7 +78,7 @@ def params_tab():
     view.q_min_txt = FloatText(description=' Dynamic pressure (bars): min', value=INIT_Q_MIN)
     view.q_max_txt = FloatText(description='max', value=INIT_Q_MAX)
     view.save_fname = Text(description='Save Kriging model as', value=INIT_SAVE_FNAME)
-    view.cokrig_path = FileChooser(layout=Layout(width='870'))  # NOTE Hardcoded width!
+    view.cokrig_path = FileChooser(layout=Layout(width='auto'))
 
     # Set widths
 
@@ -97,20 +98,21 @@ def params_tab():
     set_width([view.save_fname], width=LG_DESC_WIDTH , desc=True)
 
     # Lay out widgets
-    return VBox([HBox([Label(layout=Layout(width='135px')),
-                       Label('Model file', layout=Layout(width='60px')),
-                       Label(              layout=Layout(width='1px')),
-                       view.model_path]),
+    return VBox([HBox([view.fc_label('Model file'), view.model_path]),
                  HBox([view.train_pts_start, view.train_pts_stop, view.train_pts_step]),
                  HBox([view.a_min_txt, view.a_max_txt]),
                  HBox([view.m_min_txt, view.m_max_txt]),
                  HBox([view.q_min_txt, view.q_max_txt]),
                  view.save_fname,
-                 HBox([Label(layout=Layout(width='135px')),
-                       Label('Cokrig file .', layout=Layout(width='61px')),
-                       Label(               layout=Layout(width='0px')),
-                       view.cokrig_path])
+                 HBox([view.fc_label('Cokrig file'), view.cokrig_path])
                  ])
+
+def fc_label(txt, width=MED_DESC_WIDTH):
+    """Produce a label for a file chooser widget."""
+    return Label(txt, layout=Layout(width=width,
+                                    display="flex",
+                                    justify_content="flex-end",
+                                    margin="0px 8px 0px 0px"))
 
 def run_tab():
     view.run_btn = Button(description='Run',
@@ -166,30 +168,24 @@ def settings_tab(paths):
 
     # Create widgets
     if (cbaero_path is not None):
-        view.cbaero_path = FileChooser(cbaero_path, select_default=True, show_only_dirs=True)
+        view.cbaero_path = FileChooser(cbaero_path, select_default=True, show_only_dirs=True, layout=Layout(width='auto'))
     else:
-        view.cbaero_path = FileChooser(show_only_dirs=True)
+        view.cbaero_path = FileChooser(show_only_dirs=True, layout=Layout(width='auto'))
 
     if (tables_path is not None):
-        view.tables_path = FileChooser(tables_path, select_default=True, show_only_dirs=True)
+        view.tables_path = FileChooser(tables_path, select_default=True, show_only_dirs=True, layout=Layout(width='auto'))
     else:
-        view.tables_path = FileChooser(show_only_dirs=True)
+        view.tables_path = FileChooser(show_only_dirs=True, layout=Layout(width='auto'))
 
     if (run_path is not None):
-        view.run_path = FileChooser(run_path, select_default=True, show_only_dirs=True)
+        view.run_path = FileChooser(run_path, select_default=True, show_only_dirs=True, layout=Layout(width='auto'))
     else:
-        view.run_path = FileChooser(show_only_dirs=True)
+        view.run_path = FileChooser(show_only_dirs=True, layout=Layout(width='auto'))
 
     # Lay out widgets
-    return VBox([HBox([Label('CBAero exec. dir.', layout=Layout(width='150px')),
-                       Label(layout=Layout(width='10px')),
-                       view.cbaero_path]),
-                 HBox([Label('Tables directory', layout=Layout(width='150px')),
-                       Label(layout=Layout(width='10px')),
-                       view.tables_path]),
-                 HBox([Label('Run directory', layout=Layout(width='150px')),
-                       Label(layout=Layout(width='10px')),
-                       view.run_path])
+    return VBox([HBox([view.fc_label('CBAero exec. dir.', width=PLUS_DESC_WIDTH), view.cbaero_path]),
+                 HBox([view.fc_label('Tables directory', width=PLUS_DESC_WIDTH), view.tables_path]),
+                 HBox([view.fc_label('Run directory', width=PLUS_DESC_WIDTH), view.run_path])
                  ])
 
 def run_msg(txt, clear=False):

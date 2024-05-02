@@ -16,9 +16,8 @@ ctrl = sys.modules[__name__]
 def start():
     """Begin running the app."""
     try:
-        # Log to a file at DEBUG TODO Log to stdout, lab console? Incorporate cbaerosurrogate logging? How?
-        logging.basicConfig(filename='cbas_gui.log',
-                            format=f'%(levelname)s: %(message)s (%(filename)s:%(lineno)d, %(asctime)s)',
+        # Format log entries and set level to debug
+        logging.basicConfig(format=f'%(levelname)s: %(message)s (%(filename)s:%(lineno)d, %(asctime)s)',
                             level=logging.DEBUG)
         logging.getLogger('matplotlib.font_manager').setLevel(logging.WARNING)  # Suppress debug entries for "...findfont..."
 
