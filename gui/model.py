@@ -2,49 +2,60 @@
 import os
 import sys
 import pickle
+import logging
 
-from gui.log import log
 from gui import view
-from gui.config import SETTINGS_FILE
-
-SCRIPT_NAME = "cbas_job_script.sh"
+from gui.config import SETTINGS_FILE, SCRIPT_NAME
 
 model = sys.modules[__name__]
 
+
 def start():
     """Prep model."""
-    view.cmd = None
-    log.info('Model start')
+    logging.info('Model start')
+
 
 def get_settings():
-    """Read settings file if available."""
-    cbaero_path = None
-    tables_path = None
+    """Read settings file, if available, ensure paths exist."""
 
-    try:
-        if os.path.isfile(SETTINGS_FILE):
+    if os.path.isfile(SETTINGS_FILE):
+
+        try:
+
             with open(SETTINGS_FILE, "rb") as file:
-                cbaero_path, tables_path = pickle.load(file)
-                log.info(f'Read settings from "{SETTINGS_FILE}"')
-    except Exception:
-        log.error('ERROR when reading settings file!')
+                cbaero_path, tables_path, run_path = pickle.load(file)
 
-    if isinstance(cbaero_path, str) and not os.path.exists(cbaero_path):
+            if isinstance(cbaero_path, str) and not os.path.exists(cbaero_path):
+                cbaero_path = None
+
+            if isinstance(tables_path, str) and not os.path.exists(tables_path):
+                tables_path = None
+
+            if isinstance(run_path, str) and not os.path.exists(run_path):
+                run_path = None
+
+        except Exception:
+            logging.error('ERROR: Unable to save settings to file!')
+    else:
         cbaero_path = None
+        tables_path = None
+        run_path = None
 
-    if isinstance(tables_path, str) and not os.path.exists(tables_path):
-        cbaero_path = None
+    return (cbaero_path, tables_path, run_path)
 
-    return tables_path, cbaero_path
 
 def save_settings():
     """Save new settings to file."""
     try:
         with open(SETTINGS_FILE, "wb") as file:
-            log.info(f'Saving new settings to "{SETTINGS_FILE}"')
-            pickle.dump([view.cbaero_path.selected, view.tables_path.selected], file)
+            logging.info(f'Saving new settings to "{SETTINGS_FILE}"')
+            pickle.dump([view.cbaero_path.selected,
+                         view.tables_path.selected,
+                         view.run_path.selected],
+                        file)
     except Exception:
-        log.error('ERROR: Unable to save settings to file!')
+        logging.error('ERROR: Unable to save settings to file!')
+
 
 def generate_job_script():
     "Write a triple-quoted (multi-line) f-string, with param values inserted, to a new shell script file."""
@@ -54,7 +65,7 @@ def generate_job_script():
                              int(view.train_pts_step.value)))
 
     with open(model.SCRIPT_NAME, "w") as file:
-        log.info(f'Writing job script to "{model.SCRIPT_NAME}"...')
+        logging.info(f'Writing job script to "{SCRIPT_NAME}"...')
         file.write(f"""
 #!/bin/sh
 #SBATCH --array=0-{array_length}
@@ -90,7 +101,7 @@ export CBAERO_TABLES="$CBAERO/tables"
 MODEL="{view.model_path.value}"
 
 # Define parameters
-PARAMS="--min_alpha={view.a_min_txt.value} --max_alpha={view.a_max_txt.value} --min_mach={view.m_min_txt.value} --max_mach={view.m_max_txt.value} --min_q={view.q_min_txt.value} --max_q={view.q_max_txt.value}"
+PARAMS="--min_alpha={view.a_min_txt.value} --max_alpha={view.a_max_txt.value} --min_mach={view.m_min_txt.value} --max_mach={view.m_max_txt.value} --min_q={view.q_min_txt.value} --max_q={view.q_max_txt.value}"  # noqa E501
 
 # File options
 FILE_OPTS="--cokrig_file={view.cokrig_path.value} --save_as={view.save_fname.value}"
@@ -115,4 +126,4 @@ fi
 sacct --format="Elapsed" -j $SLURM_JOB_ID
 """)
 
-        log.info('Done.')
+        logging.info('Done.')

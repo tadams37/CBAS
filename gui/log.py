@@ -1,6 +1,5 @@
 # log.py - Logging
 import logging
-import ipywidgets as widgets
 
 
 class AppendFileLineToLog(logging.Filter):
@@ -17,14 +16,23 @@ class NotebookLoggingHandler(logging.Handler):
         logging.Handler.__init__(self)
         self.setFormatter(logging.Formatter('%(message)s (%(filename_lineno)s)'))
         self.setLevel(log_level)
-        self.log_output_widget = widgets.Output()
+        self.log_output_widget = None
+
+    def start_log_output(self, widget):
+        self.log_output_widget = widget
+
+    def stop_log_output(self):
+        self.log_output_widget = None
 
     def emit(self, message):
         """Write message to log"""
-        with self.log_output_widget:
-            print(self.format(message))
+        if self.log_output_widget is not None:
 
-log = logging.getLogger(__name__)
+            with self.log_output_widget:
+                print(self.format(message))
+
+
+log = logging.getLogger("")  # Get handle on root logger
 log_handler = NotebookLoggingHandler(logging.INFO)
 log.addHandler(log_handler)
 log.addFilter(AppendFileLineToLog())
