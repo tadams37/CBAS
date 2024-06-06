@@ -272,7 +272,13 @@ This script is a template for converting the Co-Kriging surrogate model objects 
 
 # Graphical User Interface (GUI)
 
-This GUI is a simple Jupyter Notebook that makes it easier for the user to run CBAS. It provides a simple interface whereby the user inputs can be obtained and will run CBAS directly if the user wants to run locally in serial. If the user wishes to run in parallel on a cluster, then the GUI will create a Slurm job script for the user in the appropriate format which will allow the user to run up on a cluster.
+This GUI is a simple Jupyter Notebook that makes it easier for the user to run CBAS. It provides a simple interface whereby the user inputs can be obtained and will run CBAS directly if the user wants to run locally in serial. If the user wishes to run in parallel on a cluster, the GUI will create a Slurm job script for the user in the appropriate format which will allow the user to run up on a cluster.
+
+There are four tabs in the GUI, and they are as follows:
+1. Parameters: Here, the user will select the model path, the training point range, the minimumns and maximums for the angle of attack, Mach number, and dynamic pressure, the name for the saved Kriging (or Co-Kriging) file, and the high fidelity data file if the user is building Co-Kriging models. Note that the model file selection will search for ".cbaero" file extensions because that is the file type necessary. Additionally, the Cokrig file selection will search for only "xlsx" file extensions. The Cokrig file tab may be left blank if the user does not have high fidelity data to add and thus only wishes to create Kriging models.
+1. Settings: In this tab, the user will define the paths for the CBAERO executables (see CBAERO documentation) and the CBAERO tables (see CBAERO documentaion). It also has an option to add the Run directory. This is for local, serial jobs and will be the location of all output files. It is strongly recommended that the user add a folder for the outputs to avoid cluttering the current directory.
+1. Local Run: This tab will be used if the user wants to run locally in serial. CBAS can be run directly from this tab.
+1. Job Script: This tab has a few additional parameters that must be added in order to generate a Slurm job script that can be run on a cluster. After filling in the appropriate parameters in the Parameters, Settings, and Job Script tabs you may select "Create Job Script" which will generate that job script.
 
 To run the CBAS GUI:
 
