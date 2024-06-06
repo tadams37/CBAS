@@ -49,6 +49,13 @@ def when_run(_):
 
         if valid_required_paths():
             cokrig_path, save_fname = valid_optional_paths()
+
+            if cokrig_path is not None:
+                view.run_msg(f'Using cokrig file "{cokrig_path}"')
+
+            if save_fname is not None:
+                view.run_msg(f'Saving Kriging model to file "{save_fname}"')
+
             set_cbaero_env()
             orig_cwd = set_run_dir()
             log_handler.start_log_output(view.run_out)
@@ -90,7 +97,8 @@ def when_script(_):
     try:
         logging.info('Script button was pressed')
         view.script_lbl.value = 'Working...'
-        model.generate_job_script()
+        cokrig_path, save_fname = valid_optional_paths()
+        model.generate_job_script(cokrig_path, save_fname)
         view.script_lbl.value = f'File "{model.SCRIPT_NAME}" generated successfully'
     except Exception:
         logging.error('start:\n'+traceback.format_exc())
@@ -127,13 +135,11 @@ def valid_optional_paths():
         cokrig_path = None
     else:
         cokrig_path = view.cokrig_path.selected.strip()
-        view.run_msg(f'Using cokrig file "{cokrig_path}"')
 
     if view.save_fname.value is None or view.save_fname.value.strip() == '':
         save_fname = None
     else:
         save_fname = view.save_fname.value.strip()
-        view.run_msg(f'Saving Kriging model to file "{save_fname}"')
 
     return cokrig_path, save_fname
 

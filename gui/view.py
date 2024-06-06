@@ -8,8 +8,9 @@ from ipywidgets import HBox, IntText, Label, Layout, FloatText, \
 from ipyfilechooser import FileChooser
 from IPython.core.display import clear_output
 
-from gui.config import CBAERO_FILES_FILTER, INIT_TRAIN_PTS_START, INIT_TRAIN_PTS_END, INIT_TRAIN_PTS_STEP, \
-                       INIT_A_MIN, INIT_A_MAX, INIT_M_MIN, INIT_M_MAX, INIT_Q_MIN, INIT_Q_MAX, INIT_SAVE_FNAME
+from gui.config import CBAERO_FILES_FILTER, COKRIG_FILES_FILTER, \
+                       INIT_TRAIN_PTS_START, INIT_TRAIN_PTS_END, INIT_TRAIN_PTS_STEP, INIT_A_MIN, \
+                       INIT_A_MAX, INIT_M_MIN, INIT_M_MAX, INIT_Q_MIN, INIT_Q_MAX, INIT_SAVE_FNAME
 
 SM_FULL_WIDTH = '140px'
 SM_DESC_WIDTH = '40px'
@@ -46,12 +47,12 @@ def start(paths):
     tabs = Tab()
     tab_content = []
     tab_content.append(view.params_tab())
+    tab_content.append(view.settings_tab(paths))
     tab_content.append(view.run_tab())
     tab_content.append(view.job_tab())
-    tab_content.append(view.settings_tab(paths))
     tabs.children = tuple(tab_content)  # Fill tabs with content
 
-    for i, tab_title in enumerate(['Parameters', 'Run', 'Job', 'Settings']):
+    for i, tab_title in enumerate(['Parameters', 'Settings', 'Local Run', 'Job Script']):
         tabs.set_title(i, tab_title)
 
     display(VBox([header, tabs]))
@@ -82,7 +83,7 @@ def params_tab():
     view.q_min_txt = FloatText(description=' Dynamic pressure (bars): min', value=INIT_Q_MIN)
     view.q_max_txt = FloatText(description='max', value=INIT_Q_MAX)
     view.save_fname = Text(description='Save Kriging model as', value=INIT_SAVE_FNAME)
-    view.cokrig_path = FileChooser(layout=Layout(width='auto'))
+    view.cokrig_path = FileChooser(filter_pattern=COKRIG_FILES_FILTER, layout=Layout(width='auto'))
 
     # Set widths
 

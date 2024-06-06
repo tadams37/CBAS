@@ -57,17 +57,24 @@ def save_settings():
         logging.error('ERROR: Unable to save settings to file!')
 
 
-def generate_job_script():
+def generate_job_script(cokrig_path, save_fname):
     "Write a triple-quoted (multi-line) f-string, with param values inserted, to a new shell script file."""
 
     array_length = len(range(int(view.train_pts_start.value),
                              int(view.train_pts_stop.value),
                              int(view.train_pts_step.value)))
 
+    file_opts = ''
+
+    if cokrig_path is not None:
+        file_opts += f" --cokrig_file={cokrig_path} "
+
+    if save_fname is not None:
+        file_opts += f" --save_as={save_fname} "
+
     with open(model.SCRIPT_NAME, "w") as file:
         logging.info(f'Writing job script to "{SCRIPT_NAME}"...')
-        file.write(f"""
-#!/bin/sh
+        file.write(f"""#!/bin/sh
 #SBATCH --array=0-{array_length}
 #SBATCH --cpus-per-task={view.job_cpus.value}
 #SBATCH --job-name=cbas-start
@@ -81,7 +88,7 @@ export POINTS="{view.train_pts_start.value} {view.train_pts_stop.value} {view.tr
 
 # NOTE Changes lines below as needed to use correct environment
 module load anaconda
-source activate cbaero
+source activate cbas
 
 # Threads per run - must match "--cpus-per-task=<num>" above
 export OMP_NUM_THREADS={view.job_cpus.value}
@@ -104,7 +111,7 @@ MODEL="{view.model_path.value}"
 PARAMS="--min_alpha={view.a_min_txt.value} --max_alpha={view.a_max_txt.value} --min_mach={view.m_min_txt.value} --max_mach={view.m_max_txt.value} --min_q={view.q_min_txt.value} --max_q={view.q_max_txt.value}"  # noqa E501
 
 # File options
-FILE_OPTS="--cokrig_file={view.cokrig_path.value} --save_as={view.save_fname.value}"
+FILE_OPTS="{file_opts}"
 
 # Call CBAero to create OTIS files for one set of points
 python $REPO/cbaerosurrogate.py $MODEL $POINTS $PARAMS $FILE_OPTS --run_type=pstart --task_id=$SLURM_ARRAY_TASK_ID

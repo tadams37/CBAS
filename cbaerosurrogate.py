@@ -152,7 +152,7 @@ class CbaeroSurrogate:
         # Step 1: Extract data from worksheet
 
         # NOTE Assumes FOUR columns: alpha, mach, cl, cd
-        columns = range(1,5,1) # 1,2,3,4
+        columns = range(1, 5, 1)  # 1,2,3,4
         ws = load_workbook(self.cokrig_file).active
         alphas = []
         machs = []
@@ -178,7 +178,7 @@ class CbaeroSurrogate:
         # Step 2: Parse data, load into output data structure
 
         # Temp vars to aid extraction
-        x_hf = np.array(list(zip(alphas,machs)))
+        x_hf = np.array(list(zip(alphas, machs)))
         cd_hf = np.array(cd)
         cl_hf = np.array(cl)
 
@@ -187,16 +187,16 @@ class CbaeroSurrogate:
         hf_data.x.test = x_hf[1::2]  # select every other element starting at 1
         hf_data.x.train = x_hf[::2]  # select every other element starting at 0
 
-        hf_data.cd.test = cd_hf[1::2] # select every other element starting at 1
-        hf_data.cd.train = cd_hf[::2] # select every other element starting at 0
+        hf_data.cd.test = cd_hf[1::2]  # select every other element starting at 1
+        hf_data.cd.train = cd_hf[::2]  # select every other element starting at 0
 
-        hf_data.cl.test = cl_hf[1::2] # select every other element starting at 1
-        hf_data.cl.train = cl_hf[::2] # select every other element starting at 0
+        hf_data.cl.test = cl_hf[1::2]  # select every other element starting at 1
+        hf_data.cl.train = cl_hf[::2]  # select every other element starting at 0
 
-        hf_data.cd.test = hf_data.cd.test.reshape(-1,1)
-        hf_data.cd.train = hf_data.cd.train.reshape(-1,1)
-        hf_data.cl.test = hf_data.cl.test.reshape(-1,1)
-        hf_data.cl.train = hf_data.cl.train.reshape(-1,1)
+        hf_data.cd.test = hf_data.cd.test.reshape(-1, 1)
+        hf_data.cd.train = hf_data.cd.train.reshape(-1, 1)
+        hf_data.cl.test = hf_data.cl.test.reshape(-1, 1)
+        hf_data.cl.train = hf_data.cl.train.reshape(-1, 1)
 
         return hf_data
 
@@ -270,7 +270,7 @@ class CbaeroSurrogate:
             lines[17] = CBAERO_DYN_PRESS + '\n'
 
             if qdot_opt == QDOT_CB2OTIS:
-                lines[18] = ' ' + str(random.uniform(self.min_q,self.max_q)) + '\n'
+                lines[18] = ' ' + str(random.uniform(self.min_q, self.max_q)) + '\n'
             else:
                 lines[18] = ' ' + str(lhs_matrix[i][2]) + '\n'
 
@@ -281,7 +281,7 @@ class CbaeroSurrogate:
                 input_file.writelines(lines)
 
             # Exec cbaero, cb2otis, and adb2tecplot - NOTE Assumes CBAero bins in user's PATH
-            for step in range(1,4):
+            for step in range(1, 4):
 
                 if step == 1:
                     cmd = ['cbaero'] + threads_list + [self.model_name]
@@ -349,7 +349,7 @@ class CbaeroSurrogate:
     def tecplot_reader(self, file):
         """Tecplot reader."""
         arrays = []
-        Qdot_total=[]
+        Qdot_total = []
 
         with open(os.path.join(self.otis_dir, file)) as a:
 
@@ -361,10 +361,10 @@ class CbaeroSurrogate:
 
         for i in range(len(arrays)):
 
-            if len(arrays[i])>3:
+            if len(arrays[i]) > 3:
                 Qdot_total.append(arrays[i][15])
 
-        Qdot_max = max(Qdot_total) / 1000000    #now in W/mm^2
+        Qdot_max = max(Qdot_total) / 1000000    # now in W/mm^2
         os.remove(os.path.join(self.otis_dir, file))
         return Qdot_max
 
@@ -418,8 +418,8 @@ class CbaeroSurrogate:
 
         return x_train, cl_train, cd_train
 
-    #### choose_correlation is no longer used, instead "squar_exp" will always be chosen because its a smooth function. ####
-    #### However, this function will remain here in case we want to reinstate it at a later date. 03/11/2024 - T. Adams ####
+    # choose_correlation is no longer used, instead "squar_exp" will always be chosen because its a smooth function. ####
+    # However, this function will remain here in case we want to reinstate it at a later date. 03/11/2024 - T. Adams ####
     @staticmethod
     def choose_correlation(num_training_pts, x_train, x_test, coe_train, coe_test, name, count_type):
         """Choose best correlation function for kriging."""
@@ -437,7 +437,7 @@ class CbaeroSurrogate:
             sm.train()
             logging.debug(f"Choose correlation: optimal theta found : {sm.optimal_theta}")  # theta value found
 
-            test_pred = sm.predict_values(x_test) # Predict at test values
+            test_pred = sm.predict_values(x_test)  # Predict at test values
             sm.predict_variances(x_test)  # Predict uncertainty at test values
 
             # Calc RMSE
@@ -483,12 +483,12 @@ class CbaeroSurrogate:
 
     def fit_krig(self, mode, x, other, best_corr, num_training_pts, qdot_opt):  # TODO Better name for "other"?
         """Fit kriging for Cl, Cd, or q."""
-        if qdot_opt == QDOT_CB2OTIS:   #qdot
+        if qdot_opt == QDOT_CB2OTIS:   # qdot
             sm = KRG(theta0=np.array([1e-2, 1e-2, 1e-2]), corr=best_corr, theta_bounds=[1e-6, 1e2],
-                                    print_global=False)
-        else:   #Cl or Cd
+                     print_global=False)
+        else:   # Cl or Cd
             sm = KRG(theta0=np.array([1e-2, 1e-2]), corr=best_corr, theta_bounds=[1e-6, 1e2],
-                                    print_global=False)
+                     print_global=False)
 
         sm.set_training_values(x.train, other.train)
         sm.train()
@@ -511,7 +511,7 @@ class CbaeroSurrogate:
             count = rmse / CORR_COUNT[CORR_LIFT]
         elif mode == CD_MODE:
             count = rmse / CORR_COUNT[CORR_DRAG]
-        else: #Qdot
+        else:  # Qdot
             count = rmse / np.ptp(other.test)
 
         logging.info(f"Fit krig {mode}: Count = {count}")
@@ -541,7 +541,7 @@ class CbaeroSurrogate:
         else:
             count = rmse / CORR_COUNT[CORR_DRAG]
 
-        #Save the Cokriging Model
+        # Save the Cokriging Model
         if self.save_as is not None:
 
             with open(self.save_as + "_" + mode + "_" + str(num_training_pts) + "pts.pkl", "wb") as f:
@@ -556,7 +556,7 @@ class CbaeroSurrogate:
         ax.set_ylabel("Lift Counts", fontsize=14)
         ax.set_title(r"Training Points vs. Lift Count for $C_L$", fontsize=15)
 
-        plt.savefig(f'Convergence_Cl')
+        plt.savefig('Convergence_Cl')
         plt.close()
 
         _, ax = plt.subplots()
@@ -565,7 +565,7 @@ class CbaeroSurrogate:
         ax.set_ylabel("Drag Count", fontsize=14)
         ax.set_title(r"Training Points vs. Drag Count for $C_D$", fontsize=15)
 
-        plt.savefig(f'Convergence_Cd')
+        plt.savefig('Convergence_Cd')
         plt.close()
 
         _, ax = plt.subplots()
@@ -574,7 +574,7 @@ class CbaeroSurrogate:
         ax.set_ylabel("QDot NRMSE", fontsize=14)
         ax.set_title(r"Training Points vs. $\dot{Q}$ NRMSE", fontsize=15)
 
-        plt.savefig(f'Convergence_QDot')
+        plt.savefig('Convergence_QDot')
         plt.close()
 
         logging.info("Finished creating convergence plots")
@@ -674,7 +674,6 @@ class CbaeroSurrogate:
                     file.write('\n')
 
             logging.info("Finished creating training & testing pts data file")
-
 
     def plot_lhs_training(self, x_values_train, num_training_pts, qdot_opt):
         alpha_train_lhs = []
@@ -807,7 +806,7 @@ class CbaeroSurrogate:
 
         if self.cokrig_file is not None:
             # Read data out of cokrig file
-            hf_data = cbas.get_hf_data()
+            hf_data = self.get_hf_data()
 
             # Set test values
             x.test = hf_data.x.test
@@ -906,6 +905,7 @@ class CbaeroSurrogate:
             self.plot_convergence()  # Plot convergence for lift & drag counts
             self.write_convergence_data()  # Save conv & pts to files
 
+
 if __name__ == "__main__":
 
     # Command line arugments
@@ -953,7 +953,7 @@ if __name__ == "__main__":
                         help='The minimum dynamic pressure (in bars) to test over. Default = 0.0035')
     parser.add_argument('--max_q', type=float, default=10,
                         help='The maximum dynamic pressure (in bars) to test over. Default = 10')
-    #...Running CoKriging?
+    # ...Running CoKriging?
     parser.add_argument('--cokrig_file', type=str,
                         default=None,
                         help='The path to the high fidelity training data file.')
@@ -994,6 +994,6 @@ if __name__ == "__main__":
                            args.cokrig_file, args.save_as)
 
     # Build surrogate model
-    cbas.run(args.start, args.stop, args.step, args.run_type, args.task_id)  
+    cbas.run(args.start, args.stop, args.step, args.run_type, args.task_id)
 
-    logging.info(f'End')
+    logging.info('End')
