@@ -61,7 +61,7 @@ NOTE: _You must have CBAero installed on your machine to run this. This tool spe
                         "run_type" is "pstart".
 
 ### Example:
-  - `python /home/user/shared/CBAero_Surrogate/cbas_local.py home/user/CBAS/HL20/hl20.cbaero 15 16 1 --run_type=serial --min_alpha=0 --max_alpha=35 --min_mach=1.2 --max_mach=22 --min_q=0.0035 --max_q=10 --cokrig_file=/home/user/CBAS/HL20/HL20_Test_Data.xlsx --save_as=hl20_serial`
+  - `python /home/user/shared/CBAero_Surrogate/cbaerosurrogate.py home/user/CBAS/HL20/hl20.cbaero 15 16 1 --run_type=serial --min_alpha=0 --max_alpha=35 --min_mach=1.2 --max_mach=22 --min_q=0.0035 --max_q=10 --cokrig_file=/home/user/CBAS/HL20/HL20_Test_Data.xlsx --save_as=hl20_serial`
 
   - Note that this example is for a local serial run. 
 
