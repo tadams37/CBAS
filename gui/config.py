@@ -14,4 +14,4 @@ INIT_M_MIN = 1.2
 INIT_M_MAX = 22
 INIT_Q_MIN = 0.0035
 INIT_Q_MAX = 10
-INIT_SAVE_FNAME = 'results.out'
+INIT_SAVE_FNAME = 'example'
