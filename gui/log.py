@@ -26,10 +26,11 @@ class NotebookLoggingHandler(logging.Handler):
 
     def emit(self, message):
         """Write message to log"""
-        if not self.log_output_widget is None:
+        if self.log_output_widget is not None:
 
             with self.log_output_widget:
                 print(self.format(message))
+
 
 log = logging.getLogger("")  # Get handle on root logger
 log_handler = NotebookLoggingHandler(logging.INFO)

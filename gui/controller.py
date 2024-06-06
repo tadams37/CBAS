@@ -13,13 +13,15 @@ from gui.log import log_handler
 
 ctrl = sys.modules[__name__]
 
+
 def start():
     """Begin running the app."""
     try:
         # Format log entries and set level to debug
-        logging.basicConfig(format=f'%(levelname)s: %(message)s (%(filename)s:%(lineno)d, %(asctime)s)',
+        logging.basicConfig(format='%(levelname)s: %(message)s (%(filename)s:%(lineno)d, %(asctime)s)',
                             level=logging.DEBUG)
-        logging.getLogger('matplotlib.font_manager').setLevel(logging.WARNING)  # Suppress debug entries for "...findfont..."
+        # Suppress debug entries for "...findfont..."
+        logging.getLogger('matplotlib.font_manager').setLevel(logging.WARNING)
 
         # Build UI & file access objects
         model.start()
@@ -37,6 +39,7 @@ def start():
     except Exception:
         logging.error('start:\n'+traceback.format_exc())
         raise
+
 
 def when_run(_):
     """React to user pressing run button."""
@@ -80,6 +83,7 @@ def when_run(_):
 
     view.run_msg('\nDone.')
 
+
 def when_script(_):
     """React to user pressing generate-script button."""
 
@@ -92,8 +96,10 @@ def when_script(_):
         logging.error('start:\n'+traceback.format_exc())
         raise
 
+
 def when_settings(_):
     model.save_settings()
+
 
 def valid_required_paths():
     """Ensure required paths are correct."""
@@ -103,15 +109,16 @@ def valid_required_paths():
         view.run_msg('ERROR: Model file not found')
     elif view.run_path.selected is None or not os.path.exists(view.run_path.selected):
         view.run_msg('ERROR: Invalid run directory')
-    elif view.tables_path.selected is None or not os.path.exists(os.path.join(view.tables_path.selected,'atmos')):
+    elif view.tables_path.selected is None or not os.path.exists(os.path.join(view.tables_path.selected, 'atmos')):
         view.run_msg('ERROR: Invalid tables directory')
-    elif view.cbaero_path.selected is None or not os.path.isfile(os.path.join(view.cbaero_path.selected,'cbaero')):
+    elif view.cbaero_path.selected is None or not os.path.isfile(os.path.join(view.cbaero_path.selected, 'cbaero')):
         view.run_msg('ERROR: Invalid tables directory')
     else:
         logging.debug(f'Using model: "{view.model_path.selected}"')
         valid = True
 
     return valid
+
 
 def valid_optional_paths():
     # Ensure remaining paths are either None or some text
@@ -130,12 +137,14 @@ def valid_optional_paths():
 
     return cokrig_path, save_fname
 
+
 def set_cbaero_env():
     """Set environment variables for calling CBAero."""
     os.environ['CBAERO_TABLES'] = view.tables_path.selected
 
-    if not view.cbaero_path.selected in os.environ['PATH']:
+    if view.cbaero_path.selected not in os.environ['PATH']:
         os.environ['PATH'] = '$PATH:' + view.cbaero_path.selected
+
 
 def set_run_dir():
     """Change create run dir, change to it."""

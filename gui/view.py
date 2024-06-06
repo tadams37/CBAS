@@ -8,7 +8,8 @@ from ipywidgets import HBox, IntText, Label, Layout, FloatText, \
 from ipyfilechooser import FileChooser
 from IPython.core.display import clear_output
 
-from gui.config import *
+from gui.config import CBAERO_FILES_FILTER, INIT_TRAIN_PTS_START, INIT_TRAIN_PTS_END, INIT_TRAIN_PTS_STEP, \
+                       INIT_A_MIN, INIT_A_MAX, INIT_M_MIN, INIT_M_MAX, INIT_Q_MIN, INIT_Q_MAX, INIT_SAVE_FNAME
 
 SM_FULL_WIDTH = '140px'
 SM_DESC_WIDTH = '40px'
@@ -20,6 +21,7 @@ HALF_DESC_WIDTH = '100px'
 PLUS_DESC_WIDTH = '150px'
 
 view = sys.modules[__name__]
+
 
 def start(paths):
     """Build the user interface."""
@@ -55,6 +57,7 @@ def start(paths):
     display(VBox([header, tabs]))
     logging.info('UI build completed')
 
+
 def set_width(widgets, width='auto', desc=False):
     """Set width for widgets' layouts or descriptions."""
     for widget in widgets:
@@ -63,6 +66,7 @@ def set_width(widgets, width='auto', desc=False):
             widget.style.description_width = width
         else:
             widget.layout = Layout(width=width)
+
 
 def params_tab():
     """Create widgets for Parameters screen."""
@@ -84,7 +88,7 @@ def params_tab():
 
     for widget in [view.train_pts_start, view.a_min_txt, view.m_min_txt, view.q_min_txt]:
         set_width([widget], width=MED_FULL_WIDTH)
-        set_width([widget], width=MED_DESC_WIDTH , desc=True)
+        set_width([widget], width=MED_DESC_WIDTH, desc=True)
 
     for widget in [view.a_max_txt, view.m_max_txt, view.q_max_txt]:
         set_width([widget], width='140px')
@@ -95,7 +99,7 @@ def params_tab():
         set_width([widget], width=SM_DESC_WIDTH, desc=True)
 
     set_width([view.save_fname], width=LG_FULL_WIDTH)
-    set_width([view.save_fname], width=LG_DESC_WIDTH , desc=True)
+    set_width([view.save_fname], width=LG_DESC_WIDTH, desc=True)
 
     # Lay out widgets
     return VBox([HBox([view.fc_label('Model file'), view.model_path]),
@@ -107,6 +111,7 @@ def params_tab():
                  HBox([view.fc_label('Cokrig file'), view.cokrig_path])
                  ])
 
+
 def fc_label(txt, width=MED_DESC_WIDTH):
     """Produce a label for a file chooser widget."""
     return Label(txt, layout=Layout(width=width,
@@ -114,9 +119,10 @@ def fc_label(txt, width=MED_DESC_WIDTH):
                                     justify_content="flex-end",
                                     margin="0px 8px 0px 0px"))
 
+
 def run_tab():
     view.run_btn = Button(description='Run',
-                          button_style='success', # 'success', 'info', 'warning', 'danger' or ''
+                          button_style='success',  # 'success', 'info', 'warning', 'danger' or ''
                           tooltip='Run immediatly',
                           icon='play')  # (FontAwesome names without the `fa-` prefix)
     view.run_out = Output(layout={'border': '1px solid black', 'height': '400px', 'width': 'auto', 'overflow': 'auto'})
@@ -129,6 +135,7 @@ def run_tab():
                  HTML('<hr style="visibility: hidden;">'),
                  view.run_out])
 
+
 def job_tab():
     # --cpus-per-task=4
     # --account=sos
@@ -140,7 +147,7 @@ def job_tab():
     view.job_cpus = IntText(description='CPUs per task', min=1, value=4)
     view.job_queue = Text(description='Queue name', value='')
     view.script_btn = Button(description='Create Job Script',
-                             button_style='success', # 'success', 'info', 'warning', 'danger' or ''
+                             button_style='success',  # 'success', 'info', 'warning', 'danger' or ''
                              tooltip='Save job script file',
                              icon='file')  # (FontAwesome names without the `fa-` prefix)
     view.script_lbl = Label(value='', layout=Layout(margin='0 0 0 25px'))
@@ -154,7 +161,7 @@ def job_tab():
         set_width([widget], width=SM_DESC_WIDTH, desc=True)
 
     set_width([view.job_queue], width=LG_FULL_WIDTH)
-    set_width([view.job_queue], width=HALF_DESC_WIDTH , desc=True)
+    set_width([view.job_queue], width=HALF_DESC_WIDTH, desc=True)
 
     return VBox([HBox([view.job_days, view.job_hrs, view.job_mins]),
                  view.job_cpus,
@@ -162,18 +169,21 @@ def job_tab():
                  HTML('<hr style="visibility: hidden;">'),
                  HBox([view.script_btn, view.script_lbl])])
 
+
 def settings_tab(paths):
     """Create widgets for Settings screen."""
     cbaero_path, tables_path, run_path = paths
 
     # Create widgets
     if (cbaero_path is not None):
-        view.cbaero_path = FileChooser(cbaero_path, select_default=True, show_only_dirs=True, layout=Layout(width='auto'))
+        view.cbaero_path = FileChooser(cbaero_path, select_default=True, show_only_dirs=True,
+                                       layout=Layout(width='auto'))
     else:
         view.cbaero_path = FileChooser(show_only_dirs=True, layout=Layout(width='auto'))
 
     if (tables_path is not None):
-        view.tables_path = FileChooser(tables_path, select_default=True, show_only_dirs=True, layout=Layout(width='auto'))
+        view.tables_path = FileChooser(tables_path, select_default=True, show_only_dirs=True,
+                                       layout=Layout(width='auto'))
     else:
         view.tables_path = FileChooser(show_only_dirs=True, layout=Layout(width='auto'))
 
@@ -188,6 +198,7 @@ def settings_tab(paths):
                  HBox([view.fc_label('Run directory', width=PLUS_DESC_WIDTH), view.run_path])
                  ])
 
+
 def run_msg(txt, clear=False):
     """Display text in run output widget and log it."""
     with view.run_out:
@@ -196,6 +207,6 @@ def run_msg(txt, clear=False):
             clear_output(wait=True)
 
         if txt is not None and not txt.strip() == '':
-             print(txt)
+            print(txt)
 
         sys.stdout.flush()

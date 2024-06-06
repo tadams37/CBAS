@@ -9,9 +9,11 @@ from gui.config import SETTINGS_FILE, SCRIPT_NAME
 
 model = sys.modules[__name__]
 
+
 def start():
     """Prep model."""
     logging.info('Model start')
+
 
 def get_settings():
     """Read settings file, if available, ensure paths exist."""
@@ -41,6 +43,7 @@ def get_settings():
 
     return (cbaero_path, tables_path, run_path)
 
+
 def save_settings():
     """Save new settings to file."""
     try:
@@ -49,9 +52,10 @@ def save_settings():
             pickle.dump([view.cbaero_path.selected,
                          view.tables_path.selected,
                          view.run_path.selected],
-                         file)
+                        file)
     except Exception:
         logging.error('ERROR: Unable to save settings to file!')
+
 
 def generate_job_script():
     "Write a triple-quoted (multi-line) f-string, with param values inserted, to a new shell script file."""
@@ -97,7 +101,7 @@ export CBAERO_TABLES="$CBAERO/tables"
 MODEL="{view.model_path.value}"
 
 # Define parameters
-PARAMS="--min_alpha={view.a_min_txt.value} --max_alpha={view.a_max_txt.value} --min_mach={view.m_min_txt.value} --max_mach={view.m_max_txt.value} --min_q={view.q_min_txt.value} --max_q={view.q_max_txt.value}"
+PARAMS="--min_alpha={view.a_min_txt.value} --max_alpha={view.a_max_txt.value} --min_mach={view.m_min_txt.value} --max_mach={view.m_max_txt.value} --min_q={view.q_min_txt.value} --max_q={view.q_max_txt.value}"  # noqa E501
 
 # File options
 FILE_OPTS="--cokrig_file={view.cokrig_path.value} --save_as={view.save_fname.value}"
