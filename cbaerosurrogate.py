@@ -807,7 +807,7 @@ class CbaeroSurrogate:
 
         if self.cokrig_file is not None:
             # Read data out of cokrig file
-            hf_data = cbas.get_hf_data()
+            hf_data = self.get_hf_data()
 
             # Set test values
             x.test = hf_data.x.test
@@ -994,6 +994,6 @@ if __name__ == "__main__":
                            args.cokrig_file, args.save_as)
 
     # Build surrogate model
-    cbas.run(args.start, args.stop, args.step, args.run_type, args.task_id)  
+    cbas.run(args.start, args.stop, args.step, args.run_type, args.task_id)
 
     logging.info(f'End')
