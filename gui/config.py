@@ -1,6 +1,7 @@
 # config.py - Configuration info
 SETTINGS_FILE = 'cbas_settings.pkl'
 CBAERO_FILES_FILTER = '*.cbaero'
+COKRIG_FILES_FILTER = '*.xlsx'
 CBAS_RUN_PREFIX = 'cbas_run_'
 SCRIPT_NAME = "cbas_job_script.sh"
 
