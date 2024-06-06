@@ -5,9 +5,7 @@ import pickle
 import logging
 
 from gui import view
-from gui.config import SETTINGS_FILE
-
-SCRIPT_NAME = "cbas_job_script.sh"
+from gui.config import SETTINGS_FILE, SCRIPT_NAME
 
 model = sys.modules[__name__]
 
@@ -17,24 +15,28 @@ def start():
 
 def get_settings():
     """Read settings file, if available, ensure paths exist."""
-    try:
-        if os.path.isfile(SETTINGS_FILE):
+
+    if os.path.isfile(SETTINGS_FILE):
+
+        try:
 
             with open(SETTINGS_FILE, "rb") as file:
                 cbaero_path, tables_path, run_path = pickle.load(file)
 
-    except Exception:
+            if isinstance(cbaero_path, str) and not os.path.exists(cbaero_path):
+                cbaero_path = None
+
+            if isinstance(tables_path, str) and not os.path.exists(tables_path):
+                tables_path = None
+
+            if isinstance(run_path, str) and not os.path.exists(run_path):
+                run_path = None
+
+        except Exception:
+            logging.error('ERROR: Unable to save settings to file!')
+    else:
         cbaero_path = None
         tables_path = None
-        run_path = None
-
-    if isinstance(cbaero_path, str) and not os.path.exists(cbaero_path):
-        cbaero_path = None
-
-    if isinstance(tables_path, str) and not os.path.exists(tables_path):
-        tables_path = None
-
-    if isinstance(run_path, str) and not os.path.exists(run_path):
         run_path = None
 
     return (cbaero_path, tables_path, run_path)
@@ -59,7 +61,7 @@ def generate_job_script():
                              int(view.train_pts_step.value)))
 
     with open(model.SCRIPT_NAME, "w") as file:
-        logging.info(f'Writing job script to "{model.SCRIPT_NAME}"...')
+        logging.info(f'Writing job script to "{SCRIPT_NAME}"...')
         file.write(f"""
 #!/bin/sh
 #SBATCH --array=0-{array_length}
