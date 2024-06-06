@@ -75,7 +75,7 @@ A Slurm job array can be used to make cbaerosurrogate.py run CBAero in multiple 
 1. Run cbaerosurrogate.py, in a Slurm job array, with `--run_mode` set to "pstart" and `--task_id` set to `$SLURM_ARRAY_TASK_ID`. This causes each "task" in the job array to create a separate set of OTIS files, reads the OTIS files, and generates the surrogate models.
 1. Run Call_CBAero_Teset.py, in single job, with  `--run_mode` set to "pend". This output plots and text data.
 
-# Functions Within _surrogate_build Scripts
+# Functions Within CBAS (cbaerosurrogate.py)
 
 ## get_hf_data
 This function will read the high fidelity data file specified by the user (.xlsx file type required). The function simply reads each column of the file, stores the angle of attack, Mach number, Cl, and Cd data, and returns the data as arrays.
